@@ -58,7 +58,7 @@ repository = "https://github.com/ivanjun10r/api_pgd_client"
 
 [tool.poetry]
 packages = [
-    { include = "src" },
+    { include = "api_pgd_client", from = "src" }
 ]
 
 [tool.poetry.requires-plugins]
