@@ -3,14 +3,14 @@ PGD API Client
 ==============
 
 
-.. image:: https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue
+.. image:: https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue?logo=python&logoColor=white
         :alt: Python Versions
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
         :target: https://pre-commit.com/
         :alt: pre-commit
 
-.. image:: https://img.shields.io/badge/ruff-enabled-brightgreen?logo=ruff&logoColor=white
+.. image:: https://img.shields.io/badge/Linter-Ruff-brightgreen
         :target: https://github.com/astral-sh/ruff
         :alt: ruff
 
@@ -26,7 +26,7 @@ Biblioteca para simplificar as chamadas à API do Programa de Gestão e Desempen
 
 
 * Free software: MIT license
-* Documentation: https://api-pgd-client.readthedocs.io.
+* Documentation: ...
 
 
 Features
