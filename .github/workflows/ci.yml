@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.rst'
   pull_request:
     branches:
       - '*'
+    paths-ignore:
+      - '**/*.rst'
 jobs:
   linter:
     runs-on: ubuntu-latest
