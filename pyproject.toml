@@ -14,7 +14,7 @@ maintainers = [
   {name = "Ivan Medeiros Jr", email = "ivsmjunior@gmail.com"}
 ]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -25,21 +25,19 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python",
-    # "Topic :: Multimedia",
-    # "Topic :: Software Development :: Libraries :: Application Frameworks",
-    # "Topic :: Software Development :: Build Tools",
-    "Topic :: Software Development :: Libraries :: Python Modules"
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities"
 ]
-keywords = [ "govbr", "pgd", "api", "wrapper", "python" ]
+keywords = [ "pgd", "programa-de-gestao", "govbr", "api", "python", "teletrabalho" ]
 license = {text = "MIT license"}
 requires-python = ">=3.9"
 dependencies = [
     "requests (>=2.31.0,<3.0.0)",
+    "python-decouple (>=3.8,<4.0)",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "coverage",  # testing
     "mypy",  # linting
     "pytest",  # testing
     "ruff"  # linting
@@ -73,25 +71,20 @@ sphinx = "7.2.6"
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
-
+pytest-reverse = "^1.8.0"
 
 
 # Mypy
 # ----
-
 [tool.mypy]
 files = "."
-
 # Use strict defaults
 strict = true
 warn_unreachable = true
 warn_no_return = true
-
-[[tool.mypy.overrides]]
-# Don't require test functions to include types
-module = "tests.*"
-allow_untyped_defs = true
-disable_error_code = "attr-defined"
+ignore_missing_imports = true
+exclude = "tests/"
+python_version = "3.9"
 
 # Isort
 # -----
@@ -100,14 +93,12 @@ profile = "black"
 line_length = 80
 known_first_party = "pgd_api"
 multi_line_output = 3
-# skip = "venv/"
 include_trailing_comma = true
 use_parentheses = true
-
 
 
 # Pytest
 # ------
 [tool.pytest.ini_options]
 pythonpath = "src"
-addopts = "--cov=api_pgd_client"
+addopts = "-v --cov=api_pgd_client"
