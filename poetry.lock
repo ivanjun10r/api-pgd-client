@@ -184,7 +184,7 @@ version = "7.8.0"
 description = "Code coverage measurement for Python"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "test"]
+groups = ["test"]
 files = [
     {file = "coverage-7.8.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:2931f66991175369859b5fd58529cd4b73582461877ecfd859b6549869287ffe"},
     {file = "coverage-7.8.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:52a523153c568d2c0ef8826f6cc23031dc86cffb8c6aeab92c4ff776e7951b28"},
@@ -250,7 +250,6 @@ files = [
     {file = "coverage-7.8.0-py3-none-any.whl", hash = "sha256:dbf364b4c5e7bae9250528167dfe40219b62e2d573c854d74be213e1e52069f7"},
     {file = "coverage-7.8.0.tar.gz", hash = "sha256:7a3d62b3b03b4b6fd41a085f3574874cf946cb4604d2b4d3e8dca8cd570ca501"},
 ]
-markers = {main = "extra == \"dev\""}
 
 [package.dependencies]
 tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.11.0a6\" and extra == \"toml\""}
@@ -1133,9 +1132,9 @@ test = ["big-O", "importlib-resources ; python_version < \"3.9\"", "jaraco.funct
 type = ["pytest-mypy"]
 
 [extras]
-dev = ["coverage", "mypy", "pytest", "ruff"]
+dev = ["mypy", "pytest", "ruff"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9"
-content-hash = "f0439e8e6a6081cf59baa3db97ab269b713588d7d98c6ca1b2db09ceba54c366"
+content-hash = "7c254e54eb4506d5f6780f35a11d16e9e9429fcf8ac32a3a9bd315e7b0b84eba"
