@@ -972,5 +972,176 @@ class ApiClientTestCase(TestCase):
             self.api_client.retry_on_expired_token(mock_method)
         mock_method.assert_called_once()
 
-    def test_sss(self):
-        pass
+
+class ErrorHandlingTestCase(TestCase):
+    """Testes para os novos métodos de tratamento de erro implementados."""
+
+    def setUp(self):
+        self.request = ConcreteRequest()
+
+    def test_extract_response_content_valid_json(self):
+        """Testa extração de conteúdo quando response contém JSON válido."""
+        mock_response = mock.MagicMock()
+        mock_response.json.return_value = {"error": "Not found", "code": 404}
+
+        content = self.request._extract_response_content(mock_response)
+
+        expected_content = json.dumps(
+            {"error": "Not found", "code": 404}, ensure_ascii=False, indent=4
+        )
+        self.assertEqual(content, expected_content)
+        mock_response.json.assert_called_once()
+
+    def test_extract_response_content_json_decode_error(self):
+        """Testa extração quando response.json() lança JSONDecodeError."""
+        mock_response = mock.MagicMock()
+        mock_response.json.side_effect = requests.exceptions.JSONDecodeError(
+            "Expecting value", "", 0
+        )
+        mock_response.text = "Gateway Timeout Error"
+
+        content = self.request._extract_response_content(mock_response)
+
+        self.assertEqual(content, "Gateway Timeout Error")
+        mock_response.json.assert_called_once()
+
+    def test_extract_response_content_value_error(self):
+        """Testa extração quando response.json() lança ValueError."""
+        mock_response = mock.MagicMock()
+        mock_response.json.side_effect = ValueError("Invalid JSON")
+        mock_response.text = "<html><body>502 Bad Gateway</body></html>"
+
+        content = self.request._extract_response_content(mock_response)
+
+        self.assertEqual(content, "<html><body>502 Bad Gateway</body></html>")
+        mock_response.json.assert_called_once()
+
+    def test_extract_response_content_empty_response(self):
+        """Testa extração quando response está vazio (caso típico de 504)."""
+        mock_response = mock.MagicMock()
+        mock_response.json.side_effect = requests.exceptions.JSONDecodeError(
+            "Expecting value", "", 0
+        )
+        mock_response.text = ""
+
+        content = self.request._extract_response_content(mock_response)
+
+        self.assertEqual(content, "<empty response body>")
+
+    def test_extract_response_content_none_text(self):
+        """Testa extração quando response.text é None."""
+        mock_response = mock.MagicMock()
+        mock_response.json.side_effect = requests.exceptions.JSONDecodeError(
+            "Expecting value", "", 0
+        )
+        mock_response.text = None
+
+        content = self.request._extract_response_content(mock_response)
+
+        self.assertEqual(content, "<empty response body>")
+
+    def test_build_error_message_complete(self):
+        """Testa construção completa da mensagem de erro."""
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 504
+        mock_response.json.side_effect = requests.exceptions.JSONDecodeError(
+            "Expecting value", "", 0
+        )
+        mock_response.text = "Gateway Timeout"
+
+        error_message = self.request._build_error_message("PUT", mock_response)
+
+        expected_message = (
+            "Error while trying to do a PUT request.\n"
+            "Status code: 504\n"
+            "Response:\nGateway Timeout"
+        )
+        self.assertEqual(error_message, expected_message)
+
+    def test_build_error_message_with_json_response(self):
+        """Testa construção da mensagem quando response tem JSON válido."""
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {
+            "detail": "Invalid parameter",
+            "field": "email",
+        }
+
+        error_message = self.request._build_error_message("POST", mock_response)
+
+        expected_json = json.dumps(
+            {"detail": "Invalid parameter", "field": "email"},
+            ensure_ascii=False,
+            indent=4,
+        )
+        expected_message = (
+            "Error while trying to do a POST request.\n"
+            "Status code: 400\n"
+            f"Response:\n{expected_json}"
+        )
+        self.assertEqual(error_message, expected_message)
+
+    @mock.patch("api_pgd_client.client.requests.put")
+    def test_do_request_http_error_empty_response_integration(self, mock_put):
+        """Teste de integração: erro HTTP com resposta vazia (cenário 504)."""
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 504
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "504 Gateway Timeout"
+        )
+        mock_response.json.side_effect = requests.exceptions.JSONDecodeError(
+            "Expecting value", "", 0
+        )
+        mock_response.text = ""
+        mock_put.return_value = mock_response
+
+        with self.assertRaises(ConcreteRequest.Error) as context:
+            self.request.do_put("http://example.com", {"data": "test"}, {})
+
+        error_message = str(context.exception)
+        self.assertIn("Error while trying to do a PUT request", error_message)
+        self.assertIn("Status code: 504", error_message)
+        self.assertIn("<empty response body>", error_message)
+
+    @mock.patch("api_pgd_client.client.requests.get")
+    def test_do_request_http_error_html_response_integration(self, mock_get):
+        """Teste de integração: erro HTTP com resposta HTML (cenário 502)."""
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 502
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "502 Bad Gateway"
+        )
+        mock_response.json.side_effect = requests.exceptions.JSONDecodeError(
+            "Expecting value", "", 0
+        )
+        mock_response.text = "<html><body><h1>502 Bad Gateway</h1></body></html>"
+        mock_get.return_value = mock_response
+
+        with self.assertRaises(ConcreteRequest.Error) as context:
+            self.request.do_get("http://example.com", {}, {})
+
+        error_message = str(context.exception)
+        self.assertIn("Error while trying to do a GET request", error_message)
+        self.assertIn("Status code: 502", error_message)
+        self.assertIn(
+            "<html><body><h1>502 Bad Gateway</h1></body></html>", error_message
+        )
+
+    @mock.patch("api_pgd_client.client.requests.post")
+    def test_do_request_http_error_json_response_integration(self, mock_post):
+        """Teste de integração: erro HTTP com resposta JSON válida (comportamento original)."""
+        mock_response = mock.MagicMock()
+        mock_response.status_code = 400
+        mock_response.raise_for_status.side_effect = requests.HTTPError(
+            "400 Bad Request"
+        )
+        mock_response.json.return_value = {"detail": "Invalid email format"}
+        mock_post.return_value = mock_response
+
+        with self.assertRaises(ConcreteRequest.Error) as context:
+            self.request.do_post("http://example.com", {"email": "invalid"}, {})
+
+        error_message = str(context.exception)
+        self.assertIn("Error while trying to do a POST request", error_message)
+        self.assertIn("Status code: 400", error_message)
+        self.assertIn('"detail": "Invalid email format"', error_message)

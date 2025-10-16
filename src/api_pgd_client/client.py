@@ -49,13 +49,51 @@ class BaseRequest(abc.ABC):
         try:
             response.raise_for_status()
         except requests.HTTPError as exc:
-            content = json.dumps(response.json(), ensure_ascii=False, indent=4)
-            raise self.get_error_class()(
-                f"Error while trying to do a {method_name.upper()} request.\n"
-                f"Status code: {response.status_code}\n"
-                f"Response:\n{content}"
-            ) from exc
+            error_message = self._build_error_message(method_name, response)
+            raise self.get_error_class()(error_message) from exc
         return json.loads(response.content) if response.content else None
+
+    def _build_error_message(
+        self, method_name: str, response: requests.Response
+    ) -> str:
+        """
+        Constrói uma mensagem de erro detalhada a partir da resposta HTTP.
+
+        Tenta extrair o conteúdo JSON da resposta quando possível, mas trata
+        adequadamente casos onde a resposta não é um JSON válido (como erros
+        504 Gateway Timeout que retornam páginas HTML ou respostas vazias).
+
+        Args:
+            method_name: Nome do método HTTP (GET, POST, PUT, DELETE)
+            response: Objeto Response do requests
+
+        Returns:
+            String formatada com informações do erro
+        """
+        content = self._extract_response_content(response)
+        return (
+            f"Error while trying to do a {method_name.upper()} request.\n"
+            f"Status code: {response.status_code}\n"
+            f"Response:\n{content}"
+        )
+
+    def _extract_response_content(self, response: requests.Response) -> str:
+        """
+        Extrai o conteúdo da resposta HTTP de forma segura.
+
+        Tenta primeiro parsear como JSON (para APIs que retornam erros estruturados),
+        mas faz fallback para texto bruto em caso de falha no parsing.
+
+        Args:
+            response: Objeto Response do requests
+
+        Returns:
+            Conteúdo da resposta formatado como string
+        """
+        try:
+            return json.dumps(response.json(), ensure_ascii=False, indent=4)
+        except (ValueError, requests.exceptions.JSONDecodeError):
+            return response.text or "<empty response body>"
 
     @abc.abstractmethod
     def get_error_class(self) -> Any:
