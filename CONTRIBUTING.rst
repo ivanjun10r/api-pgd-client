@@ -59,40 +59,64 @@ Get Started!
 
 Ready to contribute? Here's how to set up `api_pgd_client` for local development.
 
+This project uses `Poetry`_ to manage dependencies and virtual environments.
+
 1. Fork the `api_pgd_client` repo on GitHub.
+
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/api_pgd_client.git
+    $ cd api_pgd_client
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install Poetry (if you haven't already)::
 
-    $ mkvirtualenv api_pgd_client
-    $ cd api_pgd_client/
-    $ python setup.py develop
+    $ pip install poetry
 
-4. Create a branch for local development::
+4. Install all dependencies (production + development + tests)::
+
+    $ poetry install --with test
+
+5. Activate the virtual environment::
+
+    $ poetry shell
+
+6. Set up pre-commit hooks::
+
+    $ pre-commit install
+
+7. Create a ``.env`` file with the required environment variables::
+
+    PGD_API_USERNAME=seu_usuario
+    PGD_API_PASSWORD=sua_senha
+    PGD_SOURCE_SYSTEM_NAME=dev
+    PGD_SOURCE_SYSTEM_VERSION=0.0.0
+
+8. Create a branch for local development::
 
     $ git checkout -b name-of-your-bugfix-or-feature
 
    Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the
-   tests, including testing other Python versions with tox::
+9. When you're done making changes, check that your changes pass linting and
+   the tests::
 
     $ make lint
     $ make test
-    Or
-    $ make test-all
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   To run tests against all supported Python versions with tox::
 
-6. Commit your changes and push your branch to GitHub::
+    $ tox
+
+10. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+11. Submit a pull request through the GitHub website.
+
+Pull Request Guidelines
+-----------------------
 
 Pull Request Guidelines
 -----------------------
@@ -103,8 +127,8 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 3.5, 3.6, 3.7 and 3.8, and for PyPy. Check
-   https://travis-ci.com/ivanjun10r/api_pgd_client/pull_requests
+3. The pull request should work for Python 3.9, 3.10, 3.11, 3.12 and 3.13.
+   Check https://github.com/ivanjun10r/api_pgd_client/actions
    and make sure that the tests pass for all supported Python versions.
 
 Tips
@@ -112,8 +136,11 @@ Tips
 
 To run a subset of tests::
 
-$ pytest tests.test_api_pgd_client
+    $ pytest tests/test_client.py
 
+To run linting (ruff + mypy)::
+
+    $ make lint
 
 Deploying
 ---------
@@ -122,11 +149,9 @@ A reminder for the maintainers on how to deploy.
 Make sure all your changes are committed (including an entry in HISTORY.rst).
 Then run::
 
-$ bump2version patch # possible: major / minor / patch
-$ git push
-$ git push --tags
-
-Travis will then deploy to PyPI if tests pass.
+    $ bump2version patch # possible: major / minor / patch
+    $ git push
+    $ git push --tags
 
 Code of Conduct
 ---------------
@@ -134,4 +159,5 @@ Code of Conduct
 Please note that this project is released with a `Contributor Code of Conduct`_.
 By participating in this project you agree to abide by its terms.
 
+.. _Poetry: https://python-poetry.org/
 .. _`Contributor Code of Conduct`: CODE_OF_CONDUCT.rst

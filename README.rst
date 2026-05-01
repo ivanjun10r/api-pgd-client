@@ -22,22 +22,68 @@ PGD API Client
         :target: https://codecov.io/gh/ivanjun10r/api-pgd-client
 
 
-Biblioteca para simplificar as chamadas à API do Programa de Gestão e Desempenho do Ministério da Gestão (GovBR) para sistemas em Python, que manipula dados do teletrabalho de servidores da administração pública.
+Biblioteca Python para simplificar chamadas à `API do Programa de Gestão e Desempenho (PGD)`_ do
+Ministério da Gestão (GovBR), que gerencia dados de teletrabalho de servidores da administração
+pública federal.
+
+* Licença: MIT
+* Documentação completa: https://github.com/ivanjun10r/api_pgd_client
 
 
-* Free software: MIT license
-* Documentation: ...
+Instalação
+----------
+
+.. code-block:: console
+
+    $ pip install api_pgd_client
 
 
-Features
+Uso rápido
+----------
+
+Configure as variáveis de ambiente (ou um arquivo ``.env`` na raiz do projeto)::
+
+    PGD_API_USERNAME=seu_usuario
+    PGD_API_PASSWORD=sua_senha
+    PGD_SOURCE_SYSTEM_NAME=MeuSistema
+    PGD_SOURCE_SYSTEM_VERSION=1.0.0
+
+Instancie o cliente e consuma a API::
+
+    from api_pgd_client.client import ApiClient
+
+    client = ApiClient(
+        origem_unidade="SIAPE",
+        cod_unidade_autorizadora=123456,
+    )
+
+    usuario = client.consultar_usuario("servidor@orgao.gov.br")
+
+    participante = client.consultar_participante(
+        cod_unidade_lotacao=123456,
+        matricula_siape="1234567",
+    )
+
+    plano_entregas = client.consultar_plano_entregas("PE-2024-001")
+    plano_trabalho = client.consultar_plano_trabalho("PT-2024-001")
+
+
+Funcionalidades
+---------------
+
+* Autenticação OAuth2 com renovação automática de token
+* Consulta e envio de **Plano de Entregas**
+* Consulta e envio de **Plano de Trabalho**
+* Consulta e envio de **Participantes**
+* Consulta de **Usuários**
+* Suporte a Python 3.9 – 3.13
+
+
+Créditos
 --------
 
-* TODO
+Este pacote foi criado com Cookiecutter_ e o template `audreyr/cookiecutter-pypackage`_.
 
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
+.. _API do Programa de Gestão e Desempenho (PGD): https://www.gov.br/servidor/pt-br/assuntos/programa-de-gestao
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

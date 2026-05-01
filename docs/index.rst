@@ -1,9 +1,9 @@
-Welcome to PGD API Client's documentation!
-======================================
+Documentação — PGD API Client
+==============================
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Conteúdo:
 
    readme
    installation
@@ -13,8 +13,8 @@ Welcome to PGD API Client's documentation!
    authors
    history
 
-Indices and tables
-==================
+Índices e tabelas
+=================
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
