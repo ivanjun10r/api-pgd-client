@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "api_pgd_client"
-version = "0.1.0"
+version = "0.2.0"
 description = "Biblioteca para simplificar as chamadas à API do Programa de Gestão e Desempenho do Ministério da Gestão (GovBR) para sistemas em Python, que manipula dados do teletrabalho de servidores da administração pública."
 readme = "README.rst"
 authors = [
