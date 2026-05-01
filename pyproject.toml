@@ -1,6 +1,6 @@
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "api_pgd_client"
@@ -32,15 +32,8 @@ keywords = [ "pgd", "programa-de-gestao", "govbr", "api", "python", "teletrabalh
 license = {text = "MIT license"}
 requires-python = ">=3.9"
 dependencies = [
-    "requests (>=2.31.0,<3.0.0)",
-    "python-decouple (>=3.8,<4.0)",
-]
-
-[project.optional-dependencies]
-dev = [
-    "mypy",  # linting
-    "pytest",  # testing
-    "ruff"  # linting
+    "requests>=2.31.0,<3.0.0",
+    "python-decouple>=3.8,<4.0",
 ]
 
 [project.urls]
@@ -51,27 +44,29 @@ homepage = "https://github.com/ivanjun10r/api_pgd_client"
 repository = "https://github.com/ivanjun10r/api_pgd_client"
 
 
-# Poetry
-# ------
+# Hatch (build)
+# -------------
 
-[tool.poetry]
-packages = [
-    { include = "api_pgd_client", from = "src" }
+[tool.hatch.build.targets.wheel]
+packages = ["src/api_pgd_client"]
+
+# uv dependency groups (PEP 735)
+# ------------------------------
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+    "bump2version>=1.0.1",
+    "watchdog>=6.0.0",
+    "sphinx==7.2.6",
+    "mypy",
+    "ruff",
 ]
-
-[tool.poetry.requires-plugins]
-poetry-plugin-export = ">=1.8"
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^4.2.0"
-bump2version = "^1.0.1"
-watchdog = "^6.0.0"
-sphinx = "7.2.6"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^7.4.2"
-pytest-cov = "^4.1.0"
-pytest-reverse = "^1.8.0"
+test = [
+    "pytest>=7.4.2",
+    "pytest-cov>=4.1.0",
+    "pytest-reverse>=1.8.0",
+]
 
 
 # Mypy

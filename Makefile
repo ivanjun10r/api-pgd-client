@@ -1,4 +1,4 @@
-.PHONY: clean clean-build clean-pyc clean-test coverage dist docs help install lint lint/flake8
+.PHONY: clean clean-build clean-pyc clean-test coverage dist docs help install lint lint/ruff requirements
 
 .DEFAULT_GOAL := help
 
@@ -48,22 +48,22 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint/flake8: ## check style with flake8
-	flake8 api_pgd_client tests
+lint/ruff: ## check style with ruff
+	uv run ruff check src tests
+	uv run mypy src
 
-
-lint: lint/flake8 ## check style
+lint: lint/ruff ## check style
 
 test: ## run tests quickly with the default Python
-	pytest
+	uv run pytest
 
 test-all: ## run tests on every Python version with tox
-	tox
+	uvx tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source api_pgd_client -m pytest
-	coverage report -m
-	coverage html
+	uv run coverage run --source api_pgd_client -m pytest
+	uv run coverage report -m
+	uv run coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
@@ -78,12 +78,16 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 release: dist ## package and upload a release
-	twine upload dist/*
+	uv publish
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+	uv build
 	ls -l dist
 
-install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+install: clean ## install the package and all dependencies
+	uv sync --all-groups
+
+requirements: ## regenerate requirements files from uv.lock
+	uv export --no-dev --no-hashes -o requirements.txt
+	uv export --only-group dev --no-hashes -o requirements_dev.txt
+	uv export --only-group test --no-hashes -o requirements_test.txt

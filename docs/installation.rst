@@ -59,7 +59,7 @@ compatível com arquivos ``.env``. Crie um arquivo ``.env`` na raiz do seu proje
 A partir do código-fonte (desenvolvimento)
 ------------------------------------------
 
-Este projeto usa `Poetry`_ para gerenciar dependências e ambientes virtuais.
+Este projeto usa `uv`_ para gerenciar dependências e ambientes virtuais.
 
 1. Clone o repositório:
 
@@ -68,35 +68,29 @@ Este projeto usa `Poetry`_ para gerenciar dependências e ambientes virtuais.
     $ git clone https://github.com/ivanjun10r/api_pgd_client.git
     $ cd api_pgd_client
 
-2. Instale o Poetry (caso ainda não tenha):
+2. Instale o uv (caso ainda não tenha):
 
 .. code-block:: console
 
-    $ pip install poetry
+    $ curl -LsSf https://astral.sh/uv/install.sh | sh
 
-3. Instale todas as dependências (produção + desenvolvimento + testes):
-
-.. code-block:: console
-
-    $ poetry install --with test
-
-4. Ative o ambiente virtual criado pelo Poetry:
+3. Crie o ambiente virtual e instale todas as dependências:
 
 .. code-block:: console
 
-    $ poetry shell
+    $ uv sync --all-groups
 
-5. Configure o pre-commit:
+4. Configure o pre-commit:
 
 .. code-block:: console
 
-    $ pre-commit install
+    $ uv run pre-commit install
 
-6. Crie um arquivo ``.env`` na raiz do projeto com as variáveis necessárias (ver seção
+5. Crie um arquivo ``.env`` na raiz do projeto com as variáveis necessárias (ver seção
    :ref:`Configuração do ambiente <configuração-do-ambiente>` acima).
 
 A partir daí o ambiente está pronto para execução de testes e implementação de novas funcionalidades.
 
 
-.. _Poetry: https://python-poetry.org/
+.. _uv: https://docs.astral.sh/uv/
 .. _Github repo: https://github.com/ivanjun10r/api_pgd_client

@@ -59,7 +59,7 @@ Get Started!
 
 Ready to contribute? Here's how to set up `api_pgd_client` for local development.
 
-This project uses `Poetry`_ to manage dependencies and virtual environments.
+This project uses `uv`_ to manage dependencies and virtual environments.
 
 1. Fork the `api_pgd_client` repo on GitHub.
 
@@ -68,36 +68,32 @@ This project uses `Poetry`_ to manage dependencies and virtual environments.
     $ git clone git@github.com:your_name_here/api_pgd_client.git
     $ cd api_pgd_client
 
-3. Install Poetry (if you haven't already)::
+3. Install uv (if you haven't already)::
 
-    $ pip install poetry
+    $ curl -LsSf https://astral.sh/uv/install.sh | sh
 
-4. Install all dependencies (production + development + tests)::
+4. Create the virtual environment and install all dependencies::
 
-    $ poetry install --with test
+    $ uv sync --all-groups
 
-5. Activate the virtual environment::
+5. Set up pre-commit hooks::
 
-    $ poetry shell
+    $ uv run pre-commit install
 
-6. Set up pre-commit hooks::
-
-    $ pre-commit install
-
-7. Create a ``.env`` file with the required environment variables::
+6. Create a ``.env`` file with the required environment variables::
 
     PGD_API_USERNAME=seu_usuario
     PGD_API_PASSWORD=sua_senha
     PGD_SOURCE_SYSTEM_NAME=dev
     PGD_SOURCE_SYSTEM_VERSION=0.0.0
 
-8. Create a branch for local development::
+7. Create a branch for local development::
 
     $ git checkout -b name-of-your-bugfix-or-feature
 
    Now you can make your changes locally.
 
-9. When you're done making changes, check that your changes pass linting and
+8. When you're done making changes, check that your changes pass linting and
    the tests::
 
     $ make lint
@@ -105,15 +101,15 @@ This project uses `Poetry`_ to manage dependencies and virtual environments.
 
    To run tests against all supported Python versions with tox::
 
-    $ tox
+    $ uvx tox
 
-10. Commit your changes and push your branch to GitHub::
+9. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
 
-11. Submit a pull request through the GitHub website.
+10. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
@@ -136,7 +132,7 @@ Tips
 
 To run a subset of tests::
 
-    $ pytest tests/test_client.py
+    $ uv run pytest tests/test_client.py
 
 To run linting (ruff + mypy)::
 
@@ -159,5 +155,5 @@ Code of Conduct
 Please note that this project is released with a `Contributor Code of Conduct`_.
 By participating in this project you agree to abide by its terms.
 
-.. _Poetry: https://python-poetry.org/
+.. _uv: https://docs.astral.sh/uv/
 .. _`Contributor Code of Conduct`: CODE_OF_CONDUCT.rst
